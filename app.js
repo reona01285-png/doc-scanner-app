@@ -11,6 +11,7 @@ const applyCornersBtn = document.getElementById('applyCornersBtn');
 const backToCornersBtn = document.getElementById('backToCornersBtn');
 const rotateBtn = document.getElementById('rotateBtn');
 const downloadBtn = document.getElementById('downloadBtn');
+const downloadPdfBtn = document.getElementById('downloadPdfBtn');
 const autoEnhanceBtn = document.getElementById('autoEnhanceBtn');
 const resetColorBtn = document.getElementById('resetColorBtn');
 const brightnessInput = document.getElementById('brightness');
@@ -1050,4 +1051,100 @@ downloadBtn.addEventListener('click', () => {
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 5000);
   }, 'image/png');
+});
+
+// JPEGを1枚だけ全面に貼り付けた、最小構成のPDFを組み立てる(外部ライブラリ不要)
+function buildPdfFromJpeg(jpegBytes, width, height) {
+  const chunks = [];
+  let offset = 0;
+  const objOffsets = {};
+  const textEncoder = new TextEncoder();
+
+  function addBytes(bytes) {
+    chunks.push(bytes);
+    offset += bytes.length;
+  }
+  function addAscii(str) {
+    addBytes(textEncoder.encode(str));
+  }
+  function beginObj(num) {
+    objOffsets[num] = offset;
+    addAscii(`${num} 0 obj\n`);
+  }
+  function endObj() {
+    addAscii('endobj\n');
+  }
+
+  addAscii('%PDF-1.4\n');
+  addBytes(new Uint8Array([0x25, 0xe2, 0xe3, 0xcf, 0xd3, 0x0a])); // バイナリを含む旨のコメント行(慣習)
+
+  beginObj(1);
+  addAscii('<< /Type /Catalog /Pages 2 0 R >>\n');
+  endObj();
+
+  beginObj(2);
+  addAscii('<< /Type /Pages /Kids [3 0 R] /Count 1 >>\n');
+  endObj();
+
+  beginObj(3);
+  addAscii(
+    `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${width} ${height}] ` +
+      '/Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>\n'
+  );
+  endObj();
+
+  beginObj(4);
+  addAscii(
+    `<< /Type /XObject /Subtype /Image /Width ${width} /Height ${height} ` +
+      `/ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`
+  );
+  addBytes(jpegBytes);
+  addAscii('\nendstream\n');
+  endObj();
+
+  const content = `q\n${width} 0 0 ${height} 0 0 cm\n/Im0 Do\nQ`;
+  const contentBytes = textEncoder.encode(content);
+  beginObj(5);
+  addAscii(`<< /Length ${contentBytes.length} >>\nstream\n`);
+  addBytes(contentBytes);
+  addAscii('\nendstream\n');
+  endObj();
+
+  const xrefStart = offset;
+  addAscii('xref\n0 6\n');
+  addAscii('0000000000 65535 f \n');
+  for (let i = 1; i <= 5; i++) {
+    addAscii(`${String(objOffsets[i]).padStart(10, '0')} 00000 n \n`);
+  }
+  addAscii(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefStart}\n%%EOF`);
+
+  const total = chunks.reduce((sum, c) => sum + c.length, 0);
+  const result = new Uint8Array(total);
+  let pos = 0;
+  for (const c of chunks) {
+    result.set(c, pos);
+    pos += c.length;
+  }
+  return result;
+}
+
+downloadPdfBtn.addEventListener('click', () => {
+  if (!correctedCanvas) return;
+  resultCanvas.toBlob(
+    async (blob) => {
+      const jpegBytes = new Uint8Array(await blob.arrayBuffer());
+      const pdfBytes = buildPdfFromJpeg(jpegBytes, resultCanvas.width, resultCanvas.height);
+      const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'scanned.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    },
+    'image/jpeg',
+    0.92
+  );
 });
