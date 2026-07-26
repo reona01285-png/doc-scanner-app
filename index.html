@@ -1,0 +1,111 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>写真補正スキャナー</title>
+
+<meta name="theme-color" content="#6366f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="写真補正">
+
+<link rel="stylesheet" href="style.css">
+
+<div class="app">
+  <header class="header">
+    <h1>写真補正スキャナー</h1>
+  </header>
+
+  <main class="main">
+    <label class="file-btn" for="fileInput">画像を選択</label>
+    <input type="file" id="fileInput" accept="image/*">
+
+    <!-- Step1: 四隅の指定 -->
+    <section id="cornerSection" hidden>
+      <p class="hint" id="cornerHint">紙・書類の4つの角に、丸いハンドルを合わせてください</p>
+      <div class="canvas-wrap">
+        <canvas id="cornerCanvas"></canvas>
+      </div>
+      <canvas id="magnifierCanvas" class="magnifier" width="160" height="160"></canvas>
+      <p class="ratio-readout" id="ratioReadout">現在の比率 横:縦 ≈ 1 : 1.00</p>
+      <button type="button" id="applySuggestedRatioBtn" class="secondary-btn full-width" hidden></button>
+
+      <label class="field">
+        <span>仕上がりのサイズ(任意)</span>
+        <select id="aspectRatioSelect">
+          <option value="auto">自動(4点の位置どおり)</option>
+          <optgroup label="用紙サイズ">
+            <option value="a4-portrait">A4・縦(210×297mm)</option>
+            <option value="a4-landscape">A4・横(297×210mm)</option>
+            <option value="a5-portrait">A5・縦(148×210mm)</option>
+            <option value="a5-landscape">A5・横(210×148mm)</option>
+            <option value="b5-portrait">B5・縦(182×257mm)</option>
+            <option value="b5-landscape">B5・横(257×182mm)</option>
+            <option value="postcard-portrait">はがき・縦(100×148mm)</option>
+            <option value="postcard-landscape">はがき・横(148×100mm)</option>
+          </optgroup>
+          <optgroup label="カードサイズ">
+            <option value="card-portrait">ポケモン/MTG等・縦(63×88mm)</option>
+            <option value="card-landscape">ポケモン/MTG等・横(88×63mm)</option>
+            <option value="small-card-portrait">遊戯王/デュエマ等・縦(59×86mm)</option>
+            <option value="small-card-landscape">遊戯王/デュエマ等・横(86×59mm)</option>
+            <option value="business-card">名刺(91×55mm)</option>
+            <option value="id-card">ICカード・クレジットカード(85.6×54mm)</option>
+          </optgroup>
+          <option value="square">正方形</option>
+        </select>
+      </label>
+
+      <div class="button-row">
+        <button type="button" id="resetCornersBtn" class="secondary-btn">四隅をリセット</button>
+        <button type="button" id="applyCornersBtn" class="download-btn">この形で正面補正する</button>
+      </div>
+    </section>
+
+    <!-- Step2: 文字などの補正 -->
+    <section id="resultSection" hidden>
+      <div class="canvas-wrap">
+        <canvas id="resultCanvas"></canvas>
+      </div>
+
+      <div class="controls" id="colorControls">
+        <div class="button-row color-action-row">
+          <button type="button" id="autoEnhanceBtn" class="secondary-btn color-action-main">自動で明るさ・鮮やかさを整える</button>
+          <button type="button" id="resetColorBtn" class="secondary-btn color-action-reset">リセット</button>
+        </div>
+        <label class="field">
+          <span>明るさ</span>
+          <input type="range" id="brightness" min="50" max="150" value="100">
+        </label>
+        <label class="field">
+          <span>コントラスト</span>
+          <input type="range" id="contrast" min="50" max="200" value="110">
+        </label>
+        <label class="field checkbox-field">
+          <input type="checkbox" id="grayscaleToggle">
+          <span>グレースケールにする</span>
+        </label>
+      </div>
+
+      <div class="controls">
+        <label class="field checkbox-field">
+          <input type="checkbox" id="binarizeToggle">
+          <span>文字をくっきりさせる(白黒二値化)</span>
+        </label>
+        <label class="field" id="thresholdField" hidden>
+          <span>くっきり具合(左:濃く / 右:薄く)</span>
+          <input type="range" id="threshold" min="-40" max="40" value="0">
+        </label>
+      </div>
+
+      <div class="button-row">
+        <button type="button" id="backToCornersBtn" class="secondary-btn">四隅をやり直す</button>
+        <button type="button" id="rotateBtn" class="secondary-btn">90度回転</button>
+      </div>
+      <div class="button-row">
+        <button type="button" id="downloadBtn" class="download-btn">画像を保存</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="vendor/opencv.js"></script>
+<script src="app.js"></script>

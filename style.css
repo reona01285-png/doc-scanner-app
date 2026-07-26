@@ -1,0 +1,236 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  color-scheme: light dark;
+  --accent: #6366f1;
+  --accent2: #8b5cf6;
+  --bg: #f5f5f7;
+  --card-bg: #ffffff;
+  --text: #1c1c1e;
+  --border: #e2e2e6;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e0e12;
+    --card-bg: #1c1c22;
+    --text: #f2f2f4;
+    --border: #33333a;
+  }
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Segoe UI", sans-serif;
+  min-height: 100%;
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+.header {
+  padding: env(safe-area-inset-top, 16px) 20px 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 20px;
+  color: #fff;
+  text-align: center;
+}
+
+.main {
+  padding: 16px;
+}
+
+.canvas-wrap {
+  position: relative;
+  width: 100%;
+  min-height: 240px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 16px;
+  touch-action: none;
+}
+
+#cornerCanvas, #resultCanvas {
+  max-width: 100%;
+  display: block;
+  border-radius: 16px;
+}
+
+#fileInput {
+  display: none;
+}
+
+.magnifier {
+  position: fixed;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  display: none;
+  z-index: 1000;
+  background: #000;
+}
+
+.file-btn {
+  display: block;
+  text-align: center;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.hint {
+  font-size: 13px;
+  color: #8a8a92;
+  margin: 4px 0 12px;
+}
+
+.ratio-readout {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+  text-align: center;
+  margin: 0 0 16px;
+}
+
+.controls {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.field:last-child {
+  margin-bottom: 0;
+}
+
+.field span {
+  font-size: 13px;
+  color: #8a8a92;
+}
+
+.field select {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 16px;
+}
+
+#cornerSection > .field {
+  margin-bottom: 16px;
+}
+
+.field input[type="range"] {
+  width: 100%;
+}
+
+.checkbox-field {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkbox-field input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.checkbox-field span {
+  font-size: 15px;
+  color: var(--text);
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+}
+
+.button-row button {
+  flex: 1;
+}
+
+.download-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.download-btn:active {
+  opacity: 0.85;
+}
+
+.download-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.secondary-btn {
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.secondary-btn:active {
+  opacity: 0.85;
+}
+
+.secondary-btn.full-width {
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.color-action-row {
+  margin-bottom: 14px;
+}
+
+.color-action-main {
+  flex: 2;
+}
+
+.color-action-reset {
+  flex: 1;
+}
