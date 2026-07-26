@@ -1,5 +1,13 @@
 * {
   box-sizing: border-box;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none; /* iOSの長押しメニュー(コピー・画像を保存 等)を抑制 */
+}
+
+input, textarea, select {
+  -webkit-user-select: auto;
+  user-select: auto;
 }
 
 :root {
