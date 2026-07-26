@@ -5,6 +5,7 @@ const resultSection = document.getElementById('resultSection');
 const cornerCanvas = document.getElementById('cornerCanvas');
 const resultCanvas = document.getElementById('resultCanvas');
 const magnifierCanvas = document.getElementById('magnifierCanvas');
+const magnifierToggle = document.getElementById('magnifierToggle');
 const resetCornersBtn = document.getElementById('resetCornersBtn');
 const applyCornersBtn = document.getElementById('applyCornersBtn');
 const backToCornersBtn = document.getElementById('backToCornersBtn');
@@ -528,6 +529,10 @@ const MAGNIFIER_ZOOM = 3;
 
 function updateMagnifier(canvasPoint, clientX, clientY) {
   if (!sourceImage) return;
+  if (!magnifierToggle.checked) {
+    hideMagnifier();
+    return;
+  }
   const size = magnifierCanvas.width;
   const srcHalf = size / MAGNIFIER_ZOOM / 2;
 
